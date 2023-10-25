@@ -45,6 +45,19 @@ void printCorpus(std::vector<std::pair<std::string,std::string>> corpus)
     }
 }
 
+void printStopWords(std::vector<std::string> stop_words)
+{
+    int i = 0;
+    for (auto element: stop_words)
+    {
+        i++;
+        if (i > stop_words.size() - 20)
+        {
+            std::cout << element << "\n";
+        }
+    }
+}
+
 int main(int argc, char* argv[]) 
 {
     std::string corpus_file{""}, document_file{""}, stop_word_file{""};
@@ -52,22 +65,34 @@ int main(int argc, char* argv[])
     
     std::cout << "Fichero documento: " << document_file << std::endl;
     std::cout << "Fichero corpus: " << corpus_file << std::endl;
-    std::cout << "Fichero stop words: " << stop_word_file << std::endl;
+    std::cout << "Fichero stop words: " << stop_word_file << std::endl << std::endl;
     
-    // std::ifstream corpus{corpus_file};
-    std::ifstream corpus{argv[1]};
-    //std::ifstream document{document_file};
-    //std::ifstream stop_word{stop_word_files};
+    //std::ifstream corpus{argv[1]};
+    std::ifstream corpus{corpus_file};
+    std::ifstream stop_word{stop_word_file};
+    std::ifstream document{document_file};
 
     std::string line;
-    // Reading corpus file: 
-
+    //* Reading corpus file: 
     std::getline(corpus,line);
+
     line.erase(std::remove(line.begin(), line.end(), '"'), line.end());
     line.erase(std::remove(line.begin(), line.end(), '{'), line.end());
     line.erase(std::remove(line.begin(), line.end(), '}'), line.end());
-    // std::cout << line << std::endl;
+
     std::vector<std::pair<std::string,std::string>> corpus_vec = fill_corpus_vec(line);
-    printCorpus(corpus_vec);
+    // printCorpus(corpus_vec);
+
+    //* Reading stop word file 
+    line = "";
+    std::vector<std::string> stop_words_vec;
+
+    while(std::getline(stop_word,line))
+    {
+        stop_words_vec.emplace_back(line);
+    }
+    printStopWords(stop_words_vec);
+
+
     return 0;
 }
