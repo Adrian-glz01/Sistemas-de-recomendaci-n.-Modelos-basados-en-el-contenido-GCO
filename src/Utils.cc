@@ -24,18 +24,18 @@ void Usage(int argc, char *argv[], std::string& document, std::string& corpus, s
                 std::cout << "  -s, --stop <nombres>   Especifica la ruta al fichero de stop words" << std::endl;          
                 exit(EXIT_SUCCESS);
             case 'f':
-                std::cout << "f" << "\n";
+                //std::cout << "f" << "\n";
                 document = optarg;
-                std::cout << document << "\n";
+                //std::cout << document << "\n";
                 break;
             case 'c':
                 corpus = optarg;
-                std::cout << corpus << "\n";
+                //std::cout << corpus << "\n";
                 break;
             case 's':
-                std::cout << "s" << "\n";
+                //std::cout << "s" << "\n";
                 stop_words = optarg;
-                std::cout << stop_words << "\n";
+                //std::cout << stop_words << "\n";
                 break;
             case '?':
                 exit(EXIT_FAILURE);

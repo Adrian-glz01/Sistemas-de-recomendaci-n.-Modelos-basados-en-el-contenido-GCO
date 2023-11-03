@@ -1,4 +1,10 @@
 #include "./includes/Utils.h"
+#include <stdio.h>
+
+void changeDocumentWithCorpusWords() 
+{
+
+}
 
 std::vector<std::pair<std::string,std::string>> fill_corpus_vec(std::string text)
 {
@@ -62,7 +68,7 @@ int main(int argc, char* argv[])
 {
     std::string corpus_file{""}, document_file{""}, stop_word_file{""};
     Usage(argc, argv, document_file, corpus_file, stop_word_file);
-    
+
     /* Openning all files */
     std::ifstream corpus{corpus_file};
     std::ifstream stop_word{stop_word_file};
@@ -82,10 +88,35 @@ int main(int argc, char* argv[])
     //* Reading stop word file
     std::vector<std::string> stop_words_vec;
     std::string actual_stop_word{""};
-    while(std::getline(stop_word, actual_stop_word))
-    {
+    std::getline(stop_word, actual_stop_word);
+    while (std::getline(stop_word, actual_stop_word)) {
+        // Eliminar los espacios en blanco del principio y del final de la palabra  
+
+        if (!actual_stop_word.empty() && actual_stop_word.back() == '\r') {
+            actual_stop_word.pop_back(); // Eliminar el carácter de retorno de carro ('\r') si está presente
+        }
+        if (!actual_stop_word.empty() && actual_stop_word.back() == '\n') {
+            actual_stop_word.pop_back(); // Eliminar el carácter de salto de línea ('\n') si está presente
+        }
         stop_words_vec.push_back(actual_stop_word);
     }
+
+    std::ofstream archivo("archivo.txt", std::ios::out);
+    // Eliminar los signos de inicio de fichero y de salto de linea de las palabras del fichero de stop words
+    for (auto element: stop_words_vec)
+    {
+        archivo << element << " ";
+        int counter = 0;
+        for (int i = 0; i < element.size(); i++)
+        {   
+            counter++;
+        }
+        archivo << counter << "\n";
+    }
+    archivo << "-----------------------------------\n";
+    archivo.close();
+
+
 
     /* Procesar el docmuent*/
     std::string actual_line;
@@ -107,6 +138,11 @@ int main(int argc, char* argv[])
             actual_article.push_back(word);
         }
 
+        for (auto element: stop_words_vec) {
+            std::cout << element << std::endl;
+            std::cout << element.size() << std::endl;
+        }
+
         for (int i = 0; i < actual_article.size(); i++) 
         {
             bool is_stop_word = false;
@@ -114,6 +150,7 @@ int main(int argc, char* argv[])
             {
                 if (actual_article[i] == stop_words_vec[j])
                 {
+                    std::cout << "Entro: " << actual_article[i] << " " << stop_words_vec[j] << std::endl; 
                     is_stop_word = true;
                     break;  // Sal del bucle interno tan pronto como encuentres una "stop word"
                 }
@@ -125,13 +162,18 @@ int main(int argc, char* argv[])
             }
         }
 
-        std::cout << "Linea leida" << std::endl;
-        for (const std::string& palabra : aux) {
-            std::cout << palabra << " ";
-        }
-        std::cout << std::endl;
-
         articles.push_back(aux);
     }
+
+    for (auto element: articles)
+    {
+        for (auto word: element)
+        {
+            std::cout << word << " ";
+        }
+        std::cout << "\n";
+    }
+
+    changeDocumentWithCorpusWords();
     return 0;
 }
