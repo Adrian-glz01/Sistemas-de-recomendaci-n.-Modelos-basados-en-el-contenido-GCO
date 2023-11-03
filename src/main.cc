@@ -1,5 +1,79 @@
 #include "./includes/Utils.h"
+// #include "includes/Functions.h"
 #include <stdio.h>
+#include <set>
+#include <iomanip>
+
+// std::vector<double> CalculateTF(std::vector<double> termsRepeatedInArticle)
+// {
+//     std::vector<double> vectorTF;
+//     for (int i = 0; i < termsRepeatedInArticle.size(); i++)
+//     {
+//         vectorTF.push_back(1 + log10(termsRepeatedInArticle[i]));
+//     }
+//     return vectorTF;
+// }
+
+std::vector<int> CalculateDF(std::vector<std::set<std::string>> articles, std::set<std::string> actual_article, int pos_article)
+{
+    std::vector<int> resultDF;
+    int count;
+
+    if (pos_article == 0)
+    {
+        for (auto actual_term : actual_article)
+        {
+            count = 1;
+            for (int i = 1; i < articles.size(); i++)
+            {
+                std::set<std::string> article_n = articles[i];
+                for (auto aux : article_n)
+                {
+                    if (actual_term == aux)
+                    {
+                        count++;
+                        break;
+                    }
+                }  
+            }
+            resultDF.push_back(count);
+        }
+    } else {
+        for (auto actual_term : actual_article)
+        {
+            int i = 0;
+            count = 1;
+            for (i; i < pos_article; i++)
+            {
+                std::set<std::string> article_n = articles[i];
+                for (auto aux : article_n)
+                {
+                    if (actual_term == aux)
+                    {
+                        count++;
+                        break;
+                    }
+                }  
+            }
+
+            for (i = pos_article + 1; i < articles.size(); i++)
+            {
+                std::set<std::string> article_n = articles[i];
+                for (auto aux : article_n)
+                {
+                    if (actual_term == aux)
+                    {
+                        count++;
+                        break;
+                    }
+                }  
+            }
+            resultDF.push_back(count);
+        }
+    }
+    return resultDF;
+}
+
 
 void changeDocumentWithCorpusWords(std::vector<std::vector<std::string>> &articles, std::vector<std::pair<std::string,std::string>> corpus) 
 {
@@ -128,8 +202,6 @@ int main(int argc, char* argv[])
     //archivo << "-----------------------------------\n";
     //archivo.close();
 
-
-
     /* Procesar el docmuent*/
     std::string actual_line;
     // std::vector<std::string> document_vec;
@@ -147,12 +219,12 @@ int main(int argc, char* argv[])
 
         while (stream >> word) 
         {
-            actual_article.push_back(word);
-        }
-
-        for (auto element: stop_words_vec) {
-            std::cout << element << std::endl;
-            std::cout << element.size() << std::endl;
+            std::string word_tolower{""};
+            for (auto character : word)
+            {
+                word_tolower += std::tolower(character);
+            }
+            actual_article.push_back(word_tolower);
         }
 
         for (int i = 0; i < actual_article.size(); i++) 
@@ -162,7 +234,7 @@ int main(int argc, char* argv[])
             {
                 if (actual_article[i] == stop_words_vec[j])
                 {
-                    std::cout << "Entro: " << actual_article[i] << " " << stop_words_vec[j] << std::endl; 
+                    //std::cout << "Entro: " << actual_article[i] << " " << stop_words_vec[j] << std::endl; 
                     is_stop_word = true;
                     break;  // Sal del bucle interno tan pronto como encuentres una "stop word"
                 }
@@ -177,24 +249,62 @@ int main(int argc, char* argv[])
         articles.push_back(aux);
     }
 
-    for (auto element: articles)
-    {
-        for (auto word: element)
-        {
-            std::cout << word << " ";
-        }
-        std::cout << "\n";
-    }
-    std::cout << "-----------------------------------\n";
     changeDocumentWithCorpusWords(articles, corpus_vec);
-    for (auto element: articles)
+
+    std::vector<std::set<std::string>> WORDS;
+    std::vector<std::vector<double>> VALUES;
+
+    for (int i = 0; i < articles.size(); i++)
     {
-        for (auto word: element)
+        std::set<std::string> aux;
+        for (int j = 0; j < articles[i].size(); j++)
         {
-            std::cout << word << " ";
+            aux.insert(articles[i][j]);
         }
-        std::cout << "\n";
+        WORDS.push_back(aux);
     }
 
-    return 0;
+    for (int i = 0; i < WORDS.size(); i++)
+    {
+        std::vector<double> aux;
+        for (auto word : WORDS[i])
+        {
+            int counter = 0;
+            for (int j = 0; j < articles[i].size(); j++)
+            {
+                if (word == articles[i][j])
+                {
+                    counter++;
+                }
+            }
+            aux.push_back(counter);
+        }
+        VALUES.push_back(aux);
+    }
+
+    std::vector<std::vector<int>> ARTICLE_DF;
+    for (int i = 0; i < WORDS.size(); i++ )
+    {
+        ARTICLE_DF.emplace_back(CalculateDF(WORDS, WORDS[i], i));
+    }
+
+    // std::vector<std::vector<int>> ARTICLE_TF;
+    // for (int i = 0; i < VALUES.size(); i++)
+    // {
+    //     ARTICLE_TF.emplace_back(CalculateTF(VALUES[i]));
+    // }
+
+    int n = 0;
+    for (auto element: WORDS) {
+        int i = 0;
+        std::cout << "**Articulo** " << n << std::endl;
+        std::cout << "-----------" << "\n";
+        for (auto word : element)
+        {
+            std::cout << word << " " << VALUES[n][i]<< " " << ARTICLE_DF[n][i] << " " << std::endl;
+            i++;
+        }
+        std::cout << std::endl << std::endl;
+        n++;
+    }
 }
