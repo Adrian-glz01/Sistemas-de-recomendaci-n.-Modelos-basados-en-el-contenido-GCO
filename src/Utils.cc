@@ -29,7 +29,6 @@ void Usage(int argc, char *argv[], std::string& document, std::string& corpus, s
                 std::cout << document << "\n";
                 break;
             case 'c':
-                std::cout << "Entro en el corpus\n";
                 corpus = optarg;
                 std::cout << corpus << "\n";
                 break;
@@ -45,11 +44,11 @@ void Usage(int argc, char *argv[], std::string& document, std::string& corpus, s
         }
     }
 
-    // if (document == "" || corpus == "" || stop_words == "")
-    // {
-    //     std::cout << "Error, faltan argumentos, ejecute " << argv[0] << " --help para más ayuda" << std::endl;
-    //     exit(EXIT_FAILURE);
-    // }
+    if (document == "" || corpus == "" || stop_words == "")
+    {
+        std::cout << "Error, faltan argumentos, ejecute " << argv[0] << " --help para más ayuda" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 std::vector<std::string> GetStopWords(std::ifstream& sw_file) 
