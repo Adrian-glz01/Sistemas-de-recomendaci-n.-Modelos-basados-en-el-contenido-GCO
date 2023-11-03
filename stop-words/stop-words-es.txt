@@ -1,4 +1,5 @@
-﻿algún
+﻿STOPWORDSFILE-SPANISH
+algún
 alguna
 algunas
 alguno

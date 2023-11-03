@@ -1,9 +1,21 @@
 #include "./includes/Utils.h"
 #include <stdio.h>
 
-void changeDocumentWithCorpusWords() 
+void changeDocumentWithCorpusWords(std::vector<std::vector<std::string>> &articles, std::vector<std::pair<std::string,std::string>> corpus) 
 {
-
+    for (int i = 0; i < articles.size(); i++)
+    {
+        for (int j = 0; j < articles[i].size(); j++)
+        {
+            for (int k = 0; k < corpus.size(); k++)
+            {
+                if (articles[i][j] == corpus[k].first)
+                {
+                    articles[i][j] = corpus[k].second;
+                }
+            }
+        }
+    }
 }
 
 std::vector<std::pair<std::string,std::string>> fill_corpus_vec(std::string text)
@@ -101,20 +113,20 @@ int main(int argc, char* argv[])
         stop_words_vec.push_back(actual_stop_word);
     }
 
-    std::ofstream archivo("archivo.txt", std::ios::out);
+    //std::ofstream archivo("archivo.txt", std::ios::out);
     // Eliminar los signos de inicio de fichero y de salto de linea de las palabras del fichero de stop words
     for (auto element: stop_words_vec)
     {
-        archivo << element << " ";
+        //archivo << element << " ";
         int counter = 0;
         for (int i = 0; i < element.size(); i++)
         {   
             counter++;
         }
-        archivo << counter << "\n";
+        //archivo << counter << "\n";
     }
-    archivo << "-----------------------------------\n";
-    archivo.close();
+    //archivo << "-----------------------------------\n";
+    //archivo.close();
 
 
 
@@ -173,7 +185,16 @@ int main(int argc, char* argv[])
         }
         std::cout << "\n";
     }
+    std::cout << "-----------------------------------\n";
+    changeDocumentWithCorpusWords(articles, corpus_vec);
+    for (auto element: articles)
+    {
+        for (auto word: element)
+        {
+            std::cout << word << " ";
+        }
+        std::cout << "\n";
+    }
 
-    changeDocumentWithCorpusWords();
     return 0;
 }

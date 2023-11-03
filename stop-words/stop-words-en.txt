@@ -1,4 +1,4 @@
-﻿Aromas
+﻿STOPWORDSFILE-ENGLISH
 able
 about
 above
