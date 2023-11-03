@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
-#include <cmath>
+#include <math.h>
 #include <set>
 #include <utility>
 #include <algorithm>

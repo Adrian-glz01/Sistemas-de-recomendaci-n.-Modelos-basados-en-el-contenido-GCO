@@ -4,15 +4,31 @@
 #include <set>
 #include <iomanip>
 
-// std::vector<double> CalculateTF(std::vector<double> termsRepeatedInArticle)
-// {
-//     std::vector<double> vectorTF;
-//     for (int i = 0; i < termsRepeatedInArticle.size(); i++)
-//     {
-//         vectorTF.push_back(1 + log10(termsRepeatedInArticle[i]));
-//     }
-//     return vectorTF;
-// }
+double log10(double x) {
+    return log(x) / log(10.0);
+}
+
+std::vector<double> CalculateIDF(std::vector<int> resultDF, int numOfArticles)
+{
+    std::vector<double> resultIDF;
+    for (int i = 0; i < resultDF.size(); i++)
+    {
+        std::cout << numOfArticles << "/" << resultDF[i] << "-->" << log10(numOfArticles/resultDF[i]) << "\n";
+        resultIDF.push_back(log10(static_cast<double>(numOfArticles/resultDF[i])));
+    }
+    std::cout << "-------------------------------\n";
+    return resultIDF;
+}
+
+std::vector<double> CalculateTF(std::vector<double> termsRepeatedInArticle)
+{
+    std::vector<double> vectorTF;
+    for (int i = 0; i < termsRepeatedInArticle.size(); i++)
+    {
+        vectorTF.push_back(1 + log10(termsRepeatedInArticle[i]));
+    }
+    return vectorTF;
+}
 
 std::vector<int> CalculateDF(std::vector<std::set<std::string>> articles, std::set<std::string> actual_article, int pos_article)
 {
@@ -288,11 +304,18 @@ int main(int argc, char* argv[])
         ARTICLE_DF.emplace_back(CalculateDF(WORDS, WORDS[i], i));
     }
 
-    // std::vector<std::vector<int>> ARTICLE_TF;
-    // for (int i = 0; i < VALUES.size(); i++)
-    // {
-    //     ARTICLE_TF.emplace_back(CalculateTF(VALUES[i]));
-    // }
+    std::vector<std::vector<double>> ARTICLE_TF;
+    for (int i = 0; i < VALUES.size(); i++)
+    {
+        ARTICLE_TF.emplace_back(CalculateTF(VALUES[i]));
+    }
+
+    std::vector<std::vector<double>> ARTICLE_IDF;
+    int n_articles = ARTICLE_DF.size();
+    // std::cout << n_articles << std::endl;
+    for (int i = 0; i < n_articles; i++) {
+        ARTICLE_IDF.emplace_back(CalculateIDF(ARTICLE_DF[i], n_articles));
+    }
 
     int n = 0;
     for (auto element: WORDS) {
@@ -301,7 +324,7 @@ int main(int argc, char* argv[])
         std::cout << "-----------" << "\n";
         for (auto word : element)
         {
-            std::cout << word << " " << VALUES[n][i]<< " " << ARTICLE_DF[n][i] << " " << std::endl;
+            std::cout << word << " " << VALUES[n][i]<< " " << ARTICLE_DF[n][i] << " " << ARTICLE_IDF[n][i] << " " << ARTICLE_TF[n][i] << std::endl;
             i++;
         }
         std::cout << std::endl << std::endl;
