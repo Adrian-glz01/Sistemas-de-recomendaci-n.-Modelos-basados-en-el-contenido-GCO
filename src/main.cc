@@ -63,17 +63,13 @@ int main(int argc, char* argv[])
     std::string corpus_file{""}, document_file{""}, stop_word_file{""};
     Usage(argc, argv, document_file, corpus_file, stop_word_file);
     
-    std::cout << "Fichero documento: " << document_file << std::endl;
-    std::cout << "Fichero corpus: " << corpus_file << std::endl;
-    std::cout << "Fichero stop words: " << stop_word_file << std::endl << std::endl;
-    
-    //std::ifstream corpus{argv[1]};
+    /* Openning all files */
     std::ifstream corpus{corpus_file};
     std::ifstream stop_word{stop_word_file};
     std::ifstream document{document_file};
-
-    std::string line;
+    
     //* Reading corpus file: 
+    std::string line;
     std::getline(corpus,line);
 
     line.erase(std::remove(line.begin(), line.end(), '"'), line.end());
@@ -84,15 +80,8 @@ int main(int argc, char* argv[])
     // printCorpus(corpus_vec);
 
     //* Reading stop word file 
-    line = "";
-    std::vector<std::string> stop_words_vec;
-
-    while(std::getline(stop_word,line))
-    {
-        stop_words_vec.emplace_back(line);
-    }
-    printStopWords(stop_words_vec);
-
+    std::vector<std::string> stop_words_vec = GetStopWords(stop_word);
+    // printStopWords(stop_words_vec);
 
     return 0;
 }

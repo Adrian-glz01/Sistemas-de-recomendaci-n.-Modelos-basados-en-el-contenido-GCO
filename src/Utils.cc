@@ -51,3 +51,14 @@ void Usage(int argc, char *argv[], std::string& document, std::string& corpus, s
     //     exit(EXIT_FAILURE);
     // }
 }
+
+std::vector<std::string> GetStopWords(std::ifstream& sw_file) 
+{
+    std::vector<std::string> sw;
+    std::string actual_line;
+    while (std::getline(sw_file, actual_line))
+    {
+        sw.push_back(actual_line);
+    }
+    return sw;
+}
