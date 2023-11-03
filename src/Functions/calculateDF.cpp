@@ -1,6 +1,6 @@
 #include "../includes/Functions.h"
 
-std::vector<int> CalculateDF(std::vector<std::vector<double>> &matrix)
+std::vector<int> CalculateDF(std::vector<std::vector<std::string>> &matrix)
 {
     std::vector<int> resultDF;
     int count = 0;
@@ -8,7 +8,7 @@ std::vector<int> CalculateDF(std::vector<std::vector<double>> &matrix)
     {
         for (int i = 0; i < matrix.size(); i++)
         {
-            if (matrix[j][i] != 0)
+            if (std::stod(matrix[j][i]) != 0)
             {
                 count++;
             }
@@ -16,4 +16,5 @@ std::vector<int> CalculateDF(std::vector<std::vector<double>> &matrix)
         resultDF.push_back(count);
         count = 0;
     }
+    return resultDF;
 }
