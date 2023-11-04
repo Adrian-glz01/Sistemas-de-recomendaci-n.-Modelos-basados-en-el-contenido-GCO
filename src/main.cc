@@ -4,19 +4,17 @@
 #include <set>
 #include <iomanip>
 
-double log10(double x) {
-    return log(x) / log(10.0);
-}
-
 std::vector<double> CalculateIDF(std::vector<int> resultDF, int numOfArticles)
 {
     std::vector<double> resultIDF;
+    double numOfArticles_d = numOfArticles;
     for (int i = 0; i < resultDF.size(); i++)
     {
-        std::cout << numOfArticles << "/" << resultDF[i] << "-->" << log10(numOfArticles/resultDF[i]) << "\n";
-        resultIDF.push_back(log10(static_cast<double>(numOfArticles/resultDF[i])));
+        //std::cout << numOfArticles << "/" << resultDF[i] << "-->" << log10(numOfArticles/resultDF[i]) << "\n";
+        double resultDF_d = resultDF[i];
+        resultIDF.push_back(log10((numOfArticles_d/resultDF_d)));
     }
-    std::cout << "-------------------------------\n";
+    //std::cout << "-------------------------------\n";
     return resultIDF;
 }
 
