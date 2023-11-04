@@ -24,18 +24,13 @@ void Usage(int argc, char *argv[], std::string& document, std::string& corpus, s
                 std::cout << "  -s, --stop <nombres>   Especifica la ruta al fichero de stop words" << std::endl;          
                 exit(EXIT_SUCCESS);
             case 'f':
-                //std::cout << "f" << "\n";
                 document = optarg;
-                //std::cout << document << "\n";
                 break;
             case 'c':
                 corpus = optarg;
-                //std::cout << corpus << "\n";
                 break;
             case 's':
-                //std::cout << "s" << "\n";
                 stop_words = optarg;
-                //std::cout << stop_words << "\n";
                 break;
             case '?':
                 exit(EXIT_FAILURE);
@@ -51,13 +46,77 @@ void Usage(int argc, char *argv[], std::string& document, std::string& corpus, s
     }
 }
 
-std::vector<std::string> GetStopWords(std::ifstream& sw_file) 
+void changeDocumentWithCorpusWords(std::vector<std::vector<std::string>> &articles, std::vector<std::pair<std::string,std::string>> corpus) 
 {
-    std::vector<std::string> sw;
-    std::string actual_line;
-    while (std::getline(sw_file, actual_line))
+    for (int i = 0; i < articles.size(); i++)
     {
-        sw.push_back(actual_line);
+        for (int j = 0; j < articles[i].size(); j++)
+        {
+            for (int k = 0; k < corpus.size(); k++)
+            {
+                if (articles[i][j] == corpus[k].first)
+                {
+                    articles[i][j] = corpus[k].second;
+                }
+            }
+        }
     }
-    return sw;
+}
+
+std::vector<std::pair<std::string,std::string>> fill_corpus_vec(std::string text)
+{
+    std::vector<std::pair<std::string,std::string>> result_pair_vec;
+    std::string key{""}, value{""};
+    bool start_value = false;
+    for (int i = 0; i < text.size(); i++) 
+    {
+        if(text[i] == ':') 
+        {
+            start_value = true;
+        } else if (text[i] == ',')
+        {
+            result_pair_vec.emplace_back(std::make_pair(key,value));
+            key = "";
+            value = "";
+            start_value = false;
+            
+        }
+
+        if (start_value)
+        {
+            if (text[i] != ':') 
+            {
+                value += text[i];
+            }
+        } else 
+        {
+            if (text[i] != ',')
+            {
+                key += text[i];
+            }
+        }
+        
+    }
+    return result_pair_vec;
+}
+
+void printCorpus(std::vector<std::pair<std::string,std::string>> corpus) 
+{   
+    for (int i = 0; i < corpus.size(); i++)
+    {
+        std::cout << corpus[i].first << " " << corpus[i].second << "\n";
+    }
+}
+
+void printStopWords(std::vector<std::string> stop_words)
+{
+    int i = 0;
+    for (auto element: stop_words)
+    {
+        i++;
+        if (i > stop_words.size() - 20)
+        {
+            std::cout << element << "\n";
+        }
+    }
 }

@@ -1,286 +1,13 @@
 #include "./includes/Utils.h"
-// #include "includes/Functions.h"
-#include <stdio.h>
-#include <set>
-#include <iomanip>
-#include <algorithm>
-#include <utility>
+#include "includes/Functions.h"
 
-double Similarity(std::vector<double> article1, std::set<std::string> terms_a1, std::vector<double> article2, std::set<std::string> terms_a2)
-{
-    std::vector<std::pair<std::string, double>> aux1, aux2;
-    int i = 0;
-    for (auto term : terms_a1)
-    {
-        std::pair<std::string,double> aux = std::make_pair(term, article1[i]);
-        aux1.push_back(aux);
-        i++;
-    }
-
-    i = 0;
-    for (auto term : terms_a2)
-    {
-        std::pair<std::string,double> aux = std::make_pair(term, article2[i]);
-        aux2.push_back(aux);
-        i++;
-    }
-
-    std::vector<std::pair<std::string, double>> a1, a2;
-
-    if (aux1.size() > aux2.size())
-    {
-        for (auto actual_pair : aux1)
-        {
-            for (auto compare_pair : aux2)
-            {
-                if (actual_pair.first == compare_pair.first)
-                {
-                    a1.push_back(actual_pair);
-                    a2.push_back(compare_pair);
-                }
-            }
-        }
-    } else {
-        for (auto actual_pair : aux2)
-        {
-            for (auto compare_pair : aux1)
-            {
-                if (actual_pair.first == compare_pair.first)
-                {
-                    a2.push_back(actual_pair);
-                    a1.push_back(compare_pair);
-                }
-            }
-        }
-    }
-
-    double result = 0.0;
-    if (a1.size() != 0)
-    {
-        for (int i = 0; i < a1.size(); i++)
-        {
-            result += (a1[i].second * a2[i].second);
-        }
-    }
-    
-    return result;
-}
-
-void SimilarityMatrix(std::vector<std::vector<double>> normalizeVect, std::vector<std::set<std::string>> terms)
-{
-    for (int i = 0; i < normalizeVect.size(); i++)
-    {
-        if (i == 0)
-        {
-            std::vector<double> aux;
-            for (int j = 1; j < normalizeVect.size(); j++)
-            {
-                std::cout << "A" << i + 1<< ", A" << j + 1 << ": " << Similarity(normalizeVect[i], terms[i], normalizeVect[j], terms[j]) << std::endl;
-            }
-        } else {
-            for (int j = 0; j < i; j++)
-            {
-                std::cout << "A" << i + 1 << ", A" << j + 1 << ": " << Similarity(normalizeVect[i], terms[i], normalizeVect[j], terms[j]) << std::endl;
-            }
-
-            for (int j = i + 1; j < normalizeVect.size(); j++)
-            {
-                std::cout << "A" << i << ", A" << j << ": " << Similarity(normalizeVect[i], terms[i], normalizeVect[j], terms[j]) << std::endl;
-            }
-        }
-    }
-} 
-
-double VectorLength(std::vector<double> article)
-{
-    double sum = 0.0;
-    for (int i = 0; i < article.size(); i++)
-    {
-        sum += (article[i] * article[i]);
-    }
-    return sqrt(sum);
-}
-
-std::vector<double> Normalize(std::vector<double> article)
-{
-    std::vector<double> normalize_vec;
-    for (int i = 0; i < article.size(); i++)
-    {
-        normalize_vec.push_back(article[i] / VectorLength(article));
-
-    }
-    return normalize_vec;
-}
-
-std::vector<double> CalculateTF_IDF(std::vector<double> vectorTF, std::vector<double> resultIDF)
-{
-    std::vector<double> vectorTF_IDF;
-    for (int i = 0; i < vectorTF.size(); i++)
-    {
-        vectorTF_IDF.push_back(vectorTF[i] * resultIDF[i]);  
-    }
-
-    return vectorTF_IDF;
-}
-
-std::vector<double> CalculateIDF(std::vector<int> resultDF, int numOfArticles)
-{
-    std::vector<double> resultIDF;
-    double numOfArticles_d = numOfArticles;
-    for (int i = 0; i < resultDF.size(); i++)
-    {
-        double resultDF_d = resultDF[i];
-        resultIDF.push_back(log10((numOfArticles_d/resultDF_d)));
-    }
-    return resultIDF;
-}
-
-std::vector<double> CalculateTF(std::vector<double> termsRepeatedInArticle)
-{
-    std::vector<double> vectorTF;
-    for (int i = 0; i < termsRepeatedInArticle.size(); i++)
-    {
-        vectorTF.push_back(1.0 + log10(termsRepeatedInArticle[i]));
-    }
-    return vectorTF;
-}
-
-std::vector<int> CalculateDF(std::vector<std::set<std::string>> articles, std::set<std::string> actual_article, int pos_article)
-{
-    std::vector<int> resultDF;
-    int count;
-
-    if (pos_article == 0)
-    {
-        for (auto actual_term : actual_article)
-        {
-            count = 1;
-            for (int i = 1; i < articles.size(); i++)
-            {
-                std::set<std::string> article_n = articles[i];
-                for (auto aux : article_n)
-                {
-                    if (actual_term == aux)
-                    {
-                        count++;
-                        break;
-                    }
-                }  
-            }
-            resultDF.push_back(count);
-        }
-    } else {
-        for (auto actual_term : actual_article)
-        {
-            int i = 0;
-            count = 1;
-            for (i; i < pos_article; i++)
-            {
-                std::set<std::string> article_n = articles[i];
-                for (auto aux : article_n)
-                {
-                    if (actual_term == aux)
-                    {
-                        count++;
-                        break;
-                    }
-                }  
-            }
-
-            for (i = pos_article + 1; i < articles.size(); i++)
-            {
-                std::set<std::string> article_n = articles[i];
-                for (auto aux : article_n)
-                {
-                    if (actual_term == aux)
-                    {
-                        count++;
-                        break;
-                    }
-                }  
-            }
-            resultDF.push_back(count);
-        }
-    }
-    return resultDF;
-}
-
-
-void changeDocumentWithCorpusWords(std::vector<std::vector<std::string>> &articles, std::vector<std::pair<std::string,std::string>> corpus) 
-{
-    for (int i = 0; i < articles.size(); i++)
-    {
-        for (int j = 0; j < articles[i].size(); j++)
-        {
-            for (int k = 0; k < corpus.size(); k++)
-            {
-                if (articles[i][j] == corpus[k].first)
-                {
-                    articles[i][j] = corpus[k].second;
-                }
-            }
-        }
-    }
-}
-
-std::vector<std::pair<std::string,std::string>> fill_corpus_vec(std::string text)
-{
-    std::vector<std::pair<std::string,std::string>> result_pair_vec;
-    std::string key{""}, value{""};
-    bool start_value = false;
-    for (int i = 0; i < text.size(); i++) 
-    {
-        if(text[i] == ':') 
-        {
-            start_value = true;
-        } else if (text[i] == ',')
-        {
-            result_pair_vec.emplace_back(std::make_pair(key,value));
-            key = "";
-            value = "";
-            start_value = false;
-            
-        }
-
-        if (start_value)
-        {
-            if (text[i] != ':') 
-            {
-                value += text[i];
-            }
-        } else 
-        {
-            if (text[i] != ',')
-            {
-                key += text[i];
-            }
-        }
-        
-    }
-    return result_pair_vec;
-}
-
-void printCorpus(std::vector<std::pair<std::string,std::string>> corpus) 
-{   
-    for (int i = 0; i < corpus.size(); i++)
-    {
-        std::cout << corpus[i].first << " " << corpus[i].second << "\n";
-    }
-}
-
-void printStopWords(std::vector<std::string> stop_words)
-{
-    int i = 0;
-    for (auto element: stop_words)
-    {
-        i++;
-        if (i > stop_words.size() - 20)
-        {
-            std::cout << element << "\n";
-        }
-    }
-}
-
+/**
+ * @brief - Main function
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
 int main(int argc, char* argv[]) 
 {
     std::string corpus_file{""}, document_file{""}, stop_word_file{""};
@@ -306,18 +33,18 @@ int main(int argc, char* argv[])
     std::string actual_stop_word{""};
     std::getline(stop_word, actual_stop_word);
     while (std::getline(stop_word, actual_stop_word)) {
-        // Eliminar los espacios en blanco del principio y del final de la palabra  
+        // Remove whitespace from the beginning and end of the word
 
         if (!actual_stop_word.empty() && actual_stop_word.back() == '\r') {
-            actual_stop_word.pop_back(); // Eliminar el carácter de retorno de carro ('\r') si está presente
+            actual_stop_word.pop_back(); // Remove carriage return character ('\r') if present
         }
         if (!actual_stop_word.empty() && actual_stop_word.back() == '\n') {
-            actual_stop_word.pop_back(); // Eliminar el carácter de salto de línea ('\n') si está presente
+            actual_stop_word.pop_back(); // Remove line break character ('\n') if present
         }
         stop_words_vec.push_back(actual_stop_word);
     }
 
-    // Eliminar los signos de inicio de fichero y de salto de linea de las palabras del fichero de stop words
+    // Remove the start of file and line break signs from the words in the stop words file
     for (auto element: stop_words_vec)
     {
         int counter = 0;
@@ -359,7 +86,7 @@ int main(int argc, char* argv[])
                 if (actual_article[i] == stop_words_vec[j])
                 {
                     is_stop_word = true;
-                    break;  // Sal del bucle interno tan pronto como encuentres una "stop word"
+                    break;  // Exit the inner loop as soon as stop word is found
                 }
             }
             
@@ -428,8 +155,6 @@ int main(int argc, char* argv[])
     {
         ARTICLE_TF_IDF.emplace_back(CalculateTF_IDF(ARTICLE_TF[i], ARTICLE_IDF[i]));
     }
-    
-    std::cout << "VectLength A0: " << VectorLength(ARTICLE_TF[4]) << std::endl;
 
     std::vector<std::vector<double>> normalize_vec;
     for (int i = 0; i < n_articles; i++)
@@ -437,31 +162,22 @@ int main(int argc, char* argv[])
         normalize_vec.emplace_back(Normalize(ARTICLE_TF[i]));
     }
 
-    std::cout << "Vector 5 Normalizado\n";
-    for (int i = 0; i < normalize_vec[4].size(); i++) 
-    {
-        std::cout << normalize_vec[4][i] << " ";
+    int n = 0;
+    for (auto element: WORDS) {
+        int i = 0;
+        std::cout << "**Article** " << n + 1 << std::endl;
+        std::cout << "-----------" << "\n";
+        for (auto word : element)
+        {
+            std::cout << word << " " << VALUES[n][i]<< " " << ARTICLE_DF[n][i] << " " << ARTICLE_IDF[n][i]<< " " << ARTICLE_TF[n][i] << " " << ARTICLE_TF_IDF[n][i] << std::endl;
+            i++;
+        }
+        std::cout << std::endl << std::endl;
+        n++;
     }
-    std::cout << "\n";
 
-    
-
-    // int n = 0;
-    // for (auto element: WORDS) {
-    //     int i = 0;
-    //     std::cout << "**Articulo** " << n + 1 << std::endl;
-    //     std::cout << "-----------" << "\n";
-    //     for (auto word : element)
-    //     {
-    //         std::cout << word << " " << ARTICLE_TF_IDF[n][i] << std::endl;
-    //         i++;
-    //     }
-    //     std::cout << std::endl << std::endl;
-    //     n++;
-    // }
-
-    // << VALUES[n][i]<< " " << ARTICLE_DF[n][i] << " " << ARTICLE_IDF[n][i]<< " " << ARTICLE_TF[n][i] << " " << ARTICLE_TF_IDF[n][i] << 
-
-    std::cout << "-----Similitudes-----\n";
+    std::cout << "-----Similarities-----\n";
     SimilarityMatrix(normalize_vec, WORDS);
+    
+    return 0;
 }

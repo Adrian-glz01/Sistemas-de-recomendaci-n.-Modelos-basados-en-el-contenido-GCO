@@ -3,7 +3,7 @@ CXXFLAGS = -std=c++2a -g
 NAMEGLAGS = -o
 
 make:
-	$(CXX) $(NAMEGLAGS) sistemas_recomendacion $(CXXFLAGS) ../src/*.cc -I .
+	$(CXX) $(NAMEGLAGS) sistemas_recomendacion.o $(CXXFLAGS) ../src/*.cc ../src/Functions/*.cc -I .
 
 .PHONY: all clean
 
