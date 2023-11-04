@@ -10,6 +10,7 @@
  */
 int main(int argc, char* argv[]) 
 {
+    std::ofstream outFile("result.txt", std::ios::out | std::ios::trunc);
     std::string corpus_file{""}, document_file{""}, stop_word_file{""};
     Usage(argc, argv, document_file, corpus_file, stop_word_file);
 
@@ -162,22 +163,25 @@ int main(int argc, char* argv[])
         normalize_vec.emplace_back(Normalize(ARTICLE_TF[i]));
     }
 
+
+    
     int n = 0;
     for (auto element: WORDS) {
         int i = 0;
-        std::cout << "**Article** " << n + 1 << std::endl;
-        std::cout << "-----------" << "\n";
+        outFile << "**Articulo** " << n + 1 << std::endl;
+        outFile << "-----------" << "\n";
+        outFile << std::left << std::setw(35) << "Termino" << std::setw(10) << "Rep" << std::setw(10) << "DF" << std::setw(10) << "IDF" << std::setw(10) << "TF" << std::setw(10) << "TF-IDF" << "\n";
         for (auto word : element)
         {
-            std::cout << word << " " << VALUES[n][i]<< " " << ARTICLE_DF[n][i] << " " << ARTICLE_IDF[n][i]<< " " << ARTICLE_TF[n][i] << " " << ARTICLE_TF_IDF[n][i] << std::endl;
+            outFile << std::left<< std::setw(35) << word << std::setw(10) << VALUES[n][i] << std::setw(10) << ARTICLE_DF[n][i] << std::setw(10) << ARTICLE_IDF[n][i] << std::setw(10) << ARTICLE_TF[n][i]<< std::setw(10) << ARTICLE_TF_IDF[n][i] << std::endl;
             i++;
         }
-        std::cout << std::endl << std::endl;
+        outFile << std::endl << std::endl;
         n++;
     }
 
-    std::cout << "-----Similarities-----\n";
-    SimilarityMatrix(normalize_vec, WORDS);
-    
+    outFile << "-----Similitudes-----\n";
+    SimilarityPrint(normalize_vec, WORDS, outFile);
+    outFile.close();
     return 0;
 }

@@ -13,4 +13,4 @@ std::vector<int> CalculateDF(std::vector<std::set<std::string>> articles, std::s
 double VectorLength(std::vector<double> article);
 std::vector<double> Normalize(std::vector<double> article);
 double Similarity(std::vector<double> article1, std::set<std::string> terms_a1, std::vector<double> article2, std::set<std::string> terms_a2);
-void SimilarityMatrix(std::vector<std::vector<double>> normalizeVect, std::vector<std::set<std::string>> terms);
+void SimilarityPrint(std::vector<std::vector<double>> normalizeVect, std::vector<std::set<std::string>> terms, std::ofstream &outFile);

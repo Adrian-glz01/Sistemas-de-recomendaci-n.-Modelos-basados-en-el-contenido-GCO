@@ -11,3 +11,4 @@ make:
 
 clean :
 	rm -f sistemas_recomendacion *.o
+	rm result.txt
