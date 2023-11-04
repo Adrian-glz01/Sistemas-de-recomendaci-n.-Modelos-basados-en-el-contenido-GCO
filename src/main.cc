@@ -3,6 +3,125 @@
 #include <stdio.h>
 #include <set>
 #include <iomanip>
+#include <algorithm>
+#include <utility>
+
+double Similarity(std::vector<double> article1, std::set<std::string> terms_a1, std::vector<double> article2, std::set<std::string> terms_a2)
+{
+    std::vector<std::pair<std::string, double>> aux1, aux2;
+    int i = 0;
+    for (auto term : terms_a1)
+    {
+        std::pair<std::string,double> aux = std::make_pair(term, article1[i]);
+        aux1.push_back(aux);
+        i++;
+    }
+
+    i = 0;
+    for (auto term : terms_a2)
+    {
+        std::pair<std::string,double> aux = std::make_pair(term, article2[i]);
+        aux2.push_back(aux);
+        i++;
+    }
+
+    std::vector<std::pair<std::string, double>> a1, a2;
+
+    if (aux1.size() > aux2.size())
+    {
+        for (auto actual_pair : aux1)
+        {
+            for (auto compare_pair : aux2)
+            {
+                if (actual_pair.first == compare_pair.first)
+                {
+                    a1.push_back(actual_pair);
+                    a2.push_back(compare_pair);
+                }
+            }
+        }
+    } else {
+        for (auto actual_pair : aux2)
+        {
+            for (auto compare_pair : aux1)
+            {
+                if (actual_pair.first == compare_pair.first)
+                {
+                    a2.push_back(actual_pair);
+                    a1.push_back(compare_pair);
+                }
+            }
+        }
+    }
+
+    double result = 0.0;
+    if (a1.size() != 0)
+    {
+        for (int i = 0; i < a1.size(); i++)
+        {
+            result += (a1[i].second * a2[i].second);
+        }
+    }
+    
+    return result;
+}
+
+void SimilarityMatrix(std::vector<std::vector<double>> normalizeVect, std::vector<std::set<std::string>> terms)
+{
+    for (int i = 0; i < normalizeVect.size(); i++)
+    {
+        if (i == 0)
+        {
+            std::vector<double> aux;
+            for (int j = 1; j < normalizeVect.size(); j++)
+            {
+                std::cout << "A" << i + 1<< ", A" << j + 1 << ": " << Similarity(normalizeVect[i], terms[i], normalizeVect[j], terms[j]) << std::endl;
+            }
+        } else {
+            for (int j = 0; j < i; j++)
+            {
+                std::cout << "A" << i + 1 << ", A" << j + 1 << ": " << Similarity(normalizeVect[i], terms[i], normalizeVect[j], terms[j]) << std::endl;
+            }
+
+            for (int j = i + 1; j < normalizeVect.size(); j++)
+            {
+                std::cout << "A" << i << ", A" << j << ": " << Similarity(normalizeVect[i], terms[i], normalizeVect[j], terms[j]) << std::endl;
+            }
+        }
+    }
+} 
+
+double VectorLength(std::vector<double> article)
+{
+    double sum = 0.0;
+    for (int i = 0; i < article.size(); i++)
+    {
+        sum += (article[i] * article[i]);
+    }
+    return sqrt(sum);
+}
+
+std::vector<double> Normalize(std::vector<double> article)
+{
+    std::vector<double> normalize_vec;
+    for (int i = 0; i < article.size(); i++)
+    {
+        normalize_vec.push_back(article[i] / VectorLength(article));
+
+    }
+    return normalize_vec;
+}
+
+std::vector<double> CalculateTF_IDF(std::vector<double> vectorTF, std::vector<double> resultIDF)
+{
+    std::vector<double> vectorTF_IDF;
+    for (int i = 0; i < vectorTF.size(); i++)
+    {
+        vectorTF_IDF.push_back(vectorTF[i] * resultIDF[i]);  
+    }
+
+    return vectorTF_IDF;
+}
 
 std::vector<double> CalculateIDF(std::vector<int> resultDF, int numOfArticles)
 {
@@ -10,11 +129,9 @@ std::vector<double> CalculateIDF(std::vector<int> resultDF, int numOfArticles)
     double numOfArticles_d = numOfArticles;
     for (int i = 0; i < resultDF.size(); i++)
     {
-        //std::cout << numOfArticles << "/" << resultDF[i] << "-->" << log10(numOfArticles/resultDF[i]) << "\n";
         double resultDF_d = resultDF[i];
         resultIDF.push_back(log10((numOfArticles_d/resultDF_d)));
     }
-    //std::cout << "-------------------------------\n";
     return resultIDF;
 }
 
@@ -23,7 +140,7 @@ std::vector<double> CalculateTF(std::vector<double> termsRepeatedInArticle)
     std::vector<double> vectorTF;
     for (int i = 0; i < termsRepeatedInArticle.size(); i++)
     {
-        vectorTF.push_back(1 + log10(termsRepeatedInArticle[i]));
+        vectorTF.push_back(1.0 + log10(termsRepeatedInArticle[i]));
     }
     return vectorTF;
 }
@@ -183,7 +300,6 @@ int main(int argc, char* argv[])
     line.erase(std::remove(line.begin(), line.end(), '}'), line.end());
 
     std::vector<std::pair<std::string,std::string>> corpus_vec = fill_corpus_vec(line);
-    //printCorpus(corpus_vec);
 
     //* Reading stop word file
     std::vector<std::string> stop_words_vec;
@@ -201,24 +317,18 @@ int main(int argc, char* argv[])
         stop_words_vec.push_back(actual_stop_word);
     }
 
-    //std::ofstream archivo("archivo.txt", std::ios::out);
     // Eliminar los signos de inicio de fichero y de salto de linea de las palabras del fichero de stop words
     for (auto element: stop_words_vec)
     {
-        //archivo << element << " ";
         int counter = 0;
         for (int i = 0; i < element.size(); i++)
         {   
             counter++;
         }
-        //archivo << counter << "\n";
     }
-    //archivo << "-----------------------------------\n";
-    //archivo.close();
 
     /* Procesar el docmuent*/
     std::string actual_line;
-    // std::vector<std::string> document_vec;
     std::vector<std::vector<std::string>> articles;
 
     while(std::getline(document, actual_line))
@@ -248,7 +358,6 @@ int main(int argc, char* argv[])
             {
                 if (actual_article[i] == stop_words_vec[j])
                 {
-                    //std::cout << "Entro: " << actual_article[i] << " " << stop_words_vec[j] << std::endl; 
                     is_stop_word = true;
                     break;  // Sal del bucle interno tan pronto como encuentres una "stop word"
                 }
@@ -310,22 +419,49 @@ int main(int argc, char* argv[])
 
     std::vector<std::vector<double>> ARTICLE_IDF;
     int n_articles = ARTICLE_DF.size();
-    // std::cout << n_articles << std::endl;
     for (int i = 0; i < n_articles; i++) {
         ARTICLE_IDF.emplace_back(CalculateIDF(ARTICLE_DF[i], n_articles));
     }
 
-    int n = 0;
-    for (auto element: WORDS) {
-        int i = 0;
-        std::cout << "**Articulo** " << n << std::endl;
-        std::cout << "-----------" << "\n";
-        for (auto word : element)
-        {
-            std::cout << word << " " << VALUES[n][i]<< " " << ARTICLE_DF[n][i] << " " << ARTICLE_IDF[n][i] << " " << ARTICLE_TF[n][i] << std::endl;
-            i++;
-        }
-        std::cout << std::endl << std::endl;
-        n++;
+    std::vector<std::vector<double>> ARTICLE_TF_IDF;
+    for (int i = 0; i < n_articles; i++)
+    {
+        ARTICLE_TF_IDF.emplace_back(CalculateTF_IDF(ARTICLE_TF[i], ARTICLE_IDF[i]));
     }
+    
+    std::cout << "VectLength A0: " << VectorLength(ARTICLE_TF[4]) << std::endl;
+
+    std::vector<std::vector<double>> normalize_vec;
+    for (int i = 0; i < n_articles; i++)
+    {
+        normalize_vec.emplace_back(Normalize(ARTICLE_TF[i]));
+    }
+
+    std::cout << "Vector 5 Normalizado\n";
+    for (int i = 0; i < normalize_vec[4].size(); i++) 
+    {
+        std::cout << normalize_vec[4][i] << " ";
+    }
+    std::cout << "\n";
+
+    
+
+    // int n = 0;
+    // for (auto element: WORDS) {
+    //     int i = 0;
+    //     std::cout << "**Articulo** " << n + 1 << std::endl;
+    //     std::cout << "-----------" << "\n";
+    //     for (auto word : element)
+    //     {
+    //         std::cout << word << " " << ARTICLE_TF_IDF[n][i] << std::endl;
+    //         i++;
+    //     }
+    //     std::cout << std::endl << std::endl;
+    //     n++;
+    // }
+
+    // << VALUES[n][i]<< " " << ARTICLE_DF[n][i] << " " << ARTICLE_IDF[n][i]<< " " << ARTICLE_TF[n][i] << " " << ARTICLE_TF_IDF[n][i] << 
+
+    std::cout << "-----Similitudes-----\n";
+    SimilarityMatrix(normalize_vec, WORDS);
 }
