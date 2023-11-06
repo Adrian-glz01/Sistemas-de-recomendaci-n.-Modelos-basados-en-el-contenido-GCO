@@ -5,33 +5,33 @@
 - Alejandro García Bautista (alu0101387604@ull.edu.es)
 
 # Como esta organizado el código
-El código esta organizad en los siguientes directorios:
+El código esta organizado en los siguientes directorios:
 
 ```bash
 .
 ├── build --> Aquí encontramos el fichero Makefile y se generara el ejecutable del programa
 ├── corpus --> Aquí enocntramos los ficheros corpus proporcionados
-├── examples-documents --> Aquí encontramos los ficheros que contienen los articulos
+├── examples-documents --> Aquí encontramos los ficheros que contienen los artículos 
 ├── src --> Aquí encontramos todo el codigo fuente del programa
 │   ├── Functions --> Aquí encontramos todas las funciones necesarias para el programa DF, IDF, etc
-│   └── includes --> Aqui encontramos todos los ficheros .h de nuestro programa
+│   └── includes --> Aquí encontramos todos los ficheros .h de nuestro programa
 └── stop-words --> Aquí enocntramos los ficheros stop words proporcionados
 ```
 
 # ¿Qué se encontrará en el repositorio?
-En el repositorio actual se encontrará todo el código fuente necesario así como el fichero Makefile para poder realizar la compilación haciendo uso unicamente del comando ***make***, dentro del directorio **build/** se enctraran varios ejemplos con lo que realizar la ejecución del programa
+En el repositorio actual se encontrará todo el código fuente necesario así como el fichero Makefile para poder realizar la compilación haciendo uso únicamente del comando ***make***, dentro del directorio **build/** se encontrarán varios ejemplos con lo que realizar la ejecución del programa
 
 # Como se compila el programa
-Para poder compilar el programa hay que estar situado en el directorio **build/** y ejecutar el comando ***make***, con esto se generara un ejecutable que se llama *sistemas_recomendacion*, para conocer el uso del programa se puede ejecutar ***./sistemas_recomendacion --help*** aunque que su uso se explicara en el siguiente apartado.
+Para poder compilar el programa hay que estar situado en el directorio **build/** y ejecutar el comando ***make***, con esto se generará un ejecutable con el nombre *sistemas_recomendacion*. Para conocer el uso del programa se puede ejecutar ***./sistemas_recomendacion --help*** aunque que su uso se explicará en el siguiente apartado.
 
-# Como se usa el programa
+# Cómo se usa el programa
 Para poder hacer uso del programa debemos ejecutar el siguiente comando: __./sistemas_recomendacion -f <fichero> -c <fichero_corpus> -s <fichero_sw>__
 
-Como se indicaba en el enunciado de la practica se nombra que los argumentos sean del tipo POSIX es por eso que el anterior ejemplo de tipo de uso del programa es solo un ejemplo de las posibles combinaciones que se pueden hacer ya que los argumentos se pueden indicar en el orden que se desee, así como usar su versión larga que serian --fichero/--corpus/--stop, asi como mezclar algunos argumentos en su forma larga y otro en su forma corta.
+Como se indicaba en el enunciado de la practica se nombra que los argumentos sean del tipo POSIX, es por eso que el anterior ejemplo de tipo de uso del programa es solo un ejemplo de las posibles combinaciones que se pueden hacer, ya que los argumentos se pueden indicar en el orden que se desee, así como usar sus versiones largas que serian --fichero/--corpus/--stop, asi como mezclar algunos argumentos en su forma larga y otro en su forma corta.
 
 En la opción -f debemos indicar la ruta al fichero donde tenemos la matriz que queremos completar.
-En la opción -f debemos indicar la ruta al fichero donde tenemos la matriz que queremos completar.
-En la opción -f debemos indicar la ruta al fichero donde tenemos la matriz que queremos completar.
+En la opción -c debemos indicar la ruta al fichero donde tenemos el corpus.
+En la opción -s debemos indicar la ruta al fichero donde tenemos las stop words.
 
 Un ejemplo de uso de la aplicación puede ser la siguiente:
 
@@ -39,7 +39,7 @@ Un ejemplo de uso de la aplicación puede ser la siguiente:
 ./sistemas_recomendacion.o --fichero ../examples-documents/documents-01.txt -c ../corpus/corpus-en.txt --stop ../stop-words/stop-words-en.txt
 ```
 
-La salida de ese comando se encontrara en el fichero result.txt dentro de build y tendra el siguiente contenido
+La salida de ese comando se encontrará en el fichero result.txt dentro de build y tendrá el siguiente contenido
 
 ```txt
 **Articulo** 1
